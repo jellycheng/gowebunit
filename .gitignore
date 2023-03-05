@@ -13,3 +13,15 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+*.log
+cjs_test.go
+cjs.ini
+cjs.json
+cjs.yml
+cjs.toml
+cjs.xlsx
+cjs.sql
+go.sum
+.DS_Store
+
