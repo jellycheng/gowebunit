@@ -9,7 +9,12 @@ import (
 )
 
 func SaveGphParams(w http.ResponseWriter, r *http.Request, fileName string) {
-	curUrl := r.URL.Path                      // 当前地址
+	//curUrl := r.URL.Path                      // 当前地址
+	//if r.URL.RawQuery != ""{
+	//	curUrl += "?" + r.URL.RawQuery
+	//}
+	curUrl := r.RequestURI
+	contentType := r.Header.Get("Content-Type")
 	allHeaders := gosupport.ToJson(r.Header)  // 所有请求头，返回类型 map[string][]string
 	getStr := gosupport.ToJson(r.URL.Query()) // 所有get参数，返回类型 map[string][]string
 	//_ = r.ParseForm()
@@ -24,15 +29,16 @@ func SaveGphParams(w http.ResponseWriter, r *http.Request, fileName string) {
 
 	str := fmt.Sprintf(`
 ====================%s====================
-当前地址：%s 
-请求方式：%s
+当前地址: %s 
+请求方式: %s
+Content-Type: %s
 headers: %s
-RawQuery:%s
-get：%s 
-postform：%s 
-postbody：%s
+RawQuery: %s
+get: %s
+postform: %s 
+postbody: %s
 ====================end====================
-`, gosupport.TimeNow2Format(gosupport.TimeFormat), curUrl, r.Method, allHeaders, r.URL.RawQuery, getStr, postStr, postBodyStr)
+`, gosupport.TimeNow2Format(gosupport.TimeFormat), curUrl, r.Method, contentType, allHeaders, r.URL.RawQuery, getStr, postStr, postBodyStr)
 
 	gosupport.CreateSuperiorDir(fileName)
 	if _, err := gosupport.FilePutContents(fileName, str, 0666); err != nil {
