@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	port    = flag.String("port", "9908", "指定监听端口，默认9908")
+	port    = flag.String("port", "", "指定监听端口")
 	envFile = flag.String("config", "./.env", "指定配置文件")
 )
 
@@ -29,7 +29,7 @@ func main() {
 	appPort := goenv.GetString("APP_PORT")
 	listenPort := ":9908"
 	if appPort != "" {
-		listenPort = appPort
+		listenPort = ":" + appPort
 	}
 	if *port != "" {
 		listenPort = fmt.Sprintf(":%s", *port)
