@@ -55,9 +55,10 @@ func main() {
 	r.Any("/ximalaya/callback", func(c *gin.Context) {
 		utils.SaveGphParams(c.Writer, c.Request, fmt.Sprintf("%s%s.log", goenv.GetString("LOG_DIR"), goenv.GetString("APP_NAME")))
 		res := ""
-		if c.Request.Method == http.MethodPost {
-			res = utils.DianBoResp(0, "f8b76524b99511ed8001000000000000")
-		} else {
+		if c.Request.Method == http.MethodPost {//点播通知
+			cpOrderId := c.PostForm("cp_order_id")
+			res = utils.DianBoResp(0, cpOrderId)
+		} else {//包月通知
 			res = "success"
 		}
 
