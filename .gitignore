@@ -24,4 +24,4 @@ cjs.xlsx
 cjs.sql
 go.sum
 .DS_Store
-
+.env

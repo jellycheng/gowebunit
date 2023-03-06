@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"github.com/jellycheng/goenv"
 	"github.com/jellycheng/gosupport"
 	"io/ioutil"
 	"net/http"
@@ -54,4 +55,10 @@ func DianBoResp(hRet int, cpOrderId string) string {
 </cp_notify_resp>
 `
 	return fmt.Sprintf(str, hRet, cpOrderId)
+}
+
+func Writelog(msg string) {
+	fileName := fmt.Sprintf("%s%s.log", goenv.GetString("LOG_DIR"), goenv.GetString("APP_NAME"))
+	gosupport.CreateSuperiorDir(fileName)
+	_, _ = gosupport.FilePutContents(fileName, msg, 0666)
 }
