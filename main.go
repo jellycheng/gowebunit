@@ -51,6 +51,30 @@ func main() {
 		})
 	})
 
+	// 通用通知回调应答协议-成功
+	r.Any("/commonnotify/callback01", func(c *gin.Context) {
+		// 写日志文件
+		utils.SaveGphParams(c.Writer, c.Request, fmt.Sprintf("%s%s.log", goenv.GetString("LOG_DIR"), goenv.GetString("APP_NAME")))
+		// 响应成功
+		c.JSON(200, gin.H{
+			"code": 0,
+			"msg":  "success",
+			"data": gosupport.EmptyStruct(),
+		})
+	})
+
+	// 通用通知回调应答协议-失败
+	r.Any("/commonnotify/callback02", func(c *gin.Context) {
+		// 写日志文件
+		utils.SaveGphParams(c.Writer, c.Request, fmt.Sprintf("%s%s.log", goenv.GetString("LOG_DIR"), goenv.GetString("APP_NAME")))
+		// 响应成功
+		c.JSON(200, gin.H{
+			"code": 100,
+			"msg":  "fail，处理失败",
+			"data": gosupport.EmptyStruct(),
+		})
+	})
+
 	// 接收电信通知
 	r.Any("/ximalaya/callback", func(c *gin.Context) {
 		utils.SaveGphParams(c.Writer, c.Request, fmt.Sprintf("%s%s.log", goenv.GetString("LOG_DIR"), goenv.GetString("APP_NAME")))
