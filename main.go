@@ -51,6 +51,15 @@ func main() {
 		})
 	})
 
+	r.Any("/sleep30/return", func(c *gin.Context) {
+		gosupport.Sleep(30)
+		c.JSON(200, gin.H{
+			"code": 0,
+			"msg":  "ok",
+			"data": gosupport.EmptyStruct(),
+		})
+	})
+
 	// 通用通知回调应答协议-成功
 	r.Any("/commonnotify/callback01", func(c *gin.Context) {
 		// 写日志文件
