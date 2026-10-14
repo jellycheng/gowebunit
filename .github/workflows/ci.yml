@@ -10,14 +10,30 @@ on:
 
 # 任务集合，必须，拆分构建、测试、部署等job，用 if 控制部署条件
 jobs:
-  verify:
+  verify:             # job代号
     name: verify      # job名
     runs-on: ubuntu-latest  # 运行环境
     steps:  # 配置执行步骤
-      - name: step name1
-        run: echo "执行的命令1"
+      - name: step name1        # 步骤名
+        run: echo "执行的命令1"   # 这个步骤要执行的命令
       - name: step name2
         run: pwd
       - name: step name3
         run: ls
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print GitHub context
+        run: |
+          echo "触发事件名github.event_name=${{ github.event_name }}"
+          echo "工作流名称github.workflow=${{ github.workflow }}"
+          echo "完整引用github.ref=${{ github.ref }}"
+          echo "分支或标签名github.ref_name=${{ github.ref_name }}"
+          echo "提交SHA github.sha=${{ github.sha }}"
+          echo "触发者github.actor=${{ github.actor }}"
+          echo "仓库名github.repository=${{ github.repository }}"
+          echo "运行ID github.run_id=${{ github.run_id }}"
+          echo "运行序号github.run_number=${{ github.run_number }}"
 
