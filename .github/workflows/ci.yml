@@ -1,0 +1,10 @@
+
+name: mygoci # ci 名称,工作流名称
+
+# 配置触发事件，支持的事件名有push-提交代码，pull_request-pr方式合并代码
+on:
+  pull_request:
+    branches: [dev, staging, main]
+  push:
+    branches: [dev, staging, main]
+  workflow_call:

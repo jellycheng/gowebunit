@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 	"github.com/jellycheng/gosupport"
-	"gowebunit/utils"
+	"gowebunit/pkg/utils"
 )
 
 type XimaNotifyDto struct {
@@ -21,6 +21,7 @@ type XimaNotifyDto struct {
 	FirstPay   int    `json:"first_pay"`
 }
 
+// 验证签名
 func (m XimaNotifyDto) CheckSign(appsecret string) bool {
 	if m.PayType == 2 { //2-点播业务
 		//MD5（result_code+cp_order_id+out_order_id+fee+pay_type+app_secret）
