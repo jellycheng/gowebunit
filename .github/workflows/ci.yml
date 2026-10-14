@@ -1,10 +1,23 @@
 
 name: mygoci # ci 名称,工作流名称
 
-# 配置触发事件，支持的事件名有push-提交代码，pull_request-pr方式合并代码
+# 配置触发事件,必须，决定什么时候触发，支持的事件名有push-提交代码，pull_request-pr方式合并代码
 on:
   pull_request:
     branches: [dev, staging, main]
   push:
     branches: [dev, staging, main]
-  workflow_call:
+
+# 任务集合，必须，拆分构建、测试、部署等job，用 if 控制部署条件
+jobs:
+  verify:
+    name: verify      # job名
+    runs-on: ubuntu-latest  # 运行环境
+    steps:  # 配置执行步骤
+      - name: step name1
+        run: echo "执行的命令1"
+      - name: step name2
+        run: pwd
+      - name: step name3
+        run: ls
+
