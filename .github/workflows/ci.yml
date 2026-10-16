@@ -23,17 +23,28 @@ jobs:
 
   build:
     name: build
+    needs: [verify]
     runs-on: ubuntu-latest
     steps:
       - name: Print GitHub context
+        env:      # 定义环境变量，把github.event支持的配置转成json
+          EVENT_CONTEXT: ${{ toJSON(github.event) }}
         run: |
           echo "触发事件名github.event_name=${{ github.event_name }}"
           echo "工作流名称github.workflow=${{ github.workflow }}"
-          echo "完整引用github.ref=${{ github.ref }}"
+          echo "分支名，完整引用github.ref=${{ github.ref }}"
           echo "分支或标签名github.ref_name=${{ github.ref_name }}"
           echo "提交SHA github.sha=${{ github.sha }}"
           echo "触发者github.actor=${{ github.actor }}"
           echo "仓库名github.repository=${{ github.repository }}"
           echo "运行ID github.run_id=${{ github.run_id }}"
           echo "运行序号github.run_number=${{ github.run_number }}"
+          echo "github.token=${{ github.token }}"
+          echo "github.workspace=${{ github.workspace }}"
+          echo "github.repository_owner=${{ github.repository_owner }}"
+          echo "runner.os=${{ runner.os }}"
+          echo "job.status=${{ job.status }}"
+          echo "issue地址：${{ github.event.issue.html_url }}"
+          echo "pr地址： ${{  github.event.pull_request.html_url }}"
+          echo "github.event=$EVENT_CONTEXT"
 
