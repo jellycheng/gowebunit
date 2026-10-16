@@ -50,17 +50,18 @@ jobs:
 
   publish:          # job代号
     name: publish   # job名
+    needs: [build]  # 依赖上游job
     runs-on: ubuntu-latest
     outputs:        # 配置对下游job暴露变量
-      image_tag: ${{ steps.meta.outputs.tags }}   # ${{ steps.步骤ID.outputs.步骤变量名 }}
+      image_tag: ${{ steps.meta.outputs.short_sha }}   # ${{ steps.步骤ID.outputs.步骤变量名 }}
     steps:
       - uses: actions/checkout@v5
-      - name: Set image tag
+      - name: Set image tag   # 步骤名
         id: meta              # 步骤ID
         run: |
           short_sha="$(echo "${GITHUB_SHA}" | cut -c1-12)"
           image="$(echo "${IMAGE}" | tr '[:upper:]' '[:lower:]')"
-          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"       # 定义变量，用于当前步骤的 output
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"       # 定义short_sha变量，用于当前步骤的 output
           
           echo "image=${image}" >> "$GITHUB_OUTPUT"
           
@@ -70,3 +71,10 @@ jobs:
             echo "short_sha=${short_sha}"
             echo "image=${image}"
           } >> "$GITHUB_ENV"
+
+      - name: Docker tags # 步骤名
+        id: tags          # 步骤ID
+        run: |
+          echo "打印上一步骤变量IMAGE_REF=${IMAGE_REF}"
+          echo "short_sha=${short_sha}"
+          echo "image=${image}"
