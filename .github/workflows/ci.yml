@@ -21,8 +21,8 @@ jobs:
       - name: step name3
         run: ls
 
-  build:
-    name: build
+  build:            # job代号
+    name: build     # job名
     needs: [verify]
     runs-on: ubuntu-latest
     steps:
@@ -48,3 +48,25 @@ jobs:
           echo "pr地址： ${{  github.event.pull_request.html_url }}"
           echo "github.event=$EVENT_CONTEXT"
 
+  publish:          # job代号
+    name: publish   # job名
+    runs-on: ubuntu-latest
+    outputs:        # 配置对下游job暴露变量
+      image_tag: ${{ steps.meta.outputs.tags }}   # ${{ steps.步骤ID.outputs.步骤变量名 }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set image tag
+        id: meta              # 步骤ID
+        run: |
+          short_sha="$(echo "${GITHUB_SHA}" | cut -c1-12)"
+          image="$(echo "${IMAGE}" | tr '[:upper:]' '[:lower:]')"
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"       # 定义变量，用于当前步骤的 output
+          
+          echo "image=${image}" >> "$GITHUB_OUTPUT"
+          
+          echo "IMAGE_REF=${image}:${short_sha}" >> "$GITHUB_ENV"   # 用于后续步骤的环境变量
+          
+          {
+            echo "short_sha=${short_sha}"
+            echo "image=${image}"
+          } >> "$GITHUB_ENV"
