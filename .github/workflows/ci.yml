@@ -75,6 +75,16 @@ jobs:
       - name: Docker tags # 步骤名
         id: tags          # 步骤ID
         run: |
-          echo "打印上一步骤变量IMAGE_REF=${IMAGE_REF}"
+          echo "打印上一步骤定义的变量IMAGE_REF=${IMAGE_REF}"
           echo "short_sha=${short_sha}"
           echo "image=${image}"
+
+  deploy:
+    name: deploy
+    needs: [ publish ]  # 依赖上游job
+    runs-on: ubuntu-latest
+    steps:
+      - name: service deploy # 步骤名
+        run: |
+          echo "镜像标签是 ${{ needs.publish.outputs.image_tag }}"
+
