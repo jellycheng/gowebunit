@@ -1,90 +1,37 @@
+name: mygoci
 
-name: mygoci # ci 名称,工作流名称
-
-# 配置触发事件,必须，决定什么时候触发，支持的事件名有push-提交代码，pull_request-pr方式合并代码
+# 推送到这些分支时构建镜像并推到 GHCR。pull_request 不推镜像，避免改写 latest。
 on:
-  pull_request:
-    branches: [dev, staging, main]
   push:
     branches: [dev, staging, main]
 
-# 任务集合，必须，拆分构建、测试、部署等job，用 if 控制部署条件
+# GITHUB_TOKEN 默认不能写 Packages，推镜像需要 packages: write
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/${{ github.repository }}
+  IMAGE_TAG: ${{ vars.IMAGE_TAG || 'latest' }}
+
 jobs:
-  verify:             # job代号
-    name: verify      # job名
-    runs-on: ubuntu-latest  # 运行环境
-    steps:  # 配置执行步骤
-      - name: step name1        # 步骤名
-        run: echo "执行的命令1"   # 这个步骤要执行的命令
-      - name: step name2
-        run: pwd
-      - name: step name3
-        run: ls
-
-  build:            # job代号
-    name: build     # job名
-    needs: [verify]
+  publish:
+    name: publish
     runs-on: ubuntu-latest
     steps:
-      - name: Print GitHub context
-        env:      # 定义环境变量，把github.event支持的配置转成json
-          EVENT_CONTEXT: ${{ toJSON(github.event) }}
-        run: |
-          echo "触发事件名github.event_name=${{ github.event_name }}"
-          echo "工作流名称github.workflow=${{ github.workflow }}"
-          echo "分支名，完整引用github.ref=${{ github.ref }}"
-          echo "分支或标签名github.ref_name=${{ github.ref_name }}"
-          echo "提交SHA github.sha=${{ github.sha }}"
-          echo "触发者github.actor=${{ github.actor }}"
-          echo "仓库名github.repository=${{ github.repository }}"
-          echo "运行ID github.run_id=${{ github.run_id }}"
-          echo "运行序号github.run_number=${{ github.run_number }}"
-          echo "github.token=${{ github.token }}"
-          echo "github.workspace=${{ github.workspace }}"
-          echo "github.repository_owner=${{ github.repository_owner }}"
-          echo "操作系统runner.os=${{ runner.os }}"
-          echo "job.status=${{ job.status }}"
-          echo "issue地址：${{ github.event.issue.html_url }}"
-          echo "pr地址： ${{  github.event.pull_request.html_url }}"
-          echo "github.event=$EVENT_CONTEXT"
+      - name: Checkout
+        uses: actions/checkout@v5
 
-  publish:          # job代号
-    name: publish   # job名
-    needs: [build]  # 依赖上游job
-    runs-on: ubuntu-latest
-    outputs:        # 配置对下游job暴露变量
-      image_tag: ${{ steps.meta.outputs.short_sha }}   # ${{ steps.步骤ID.outputs.步骤变量名 }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Set image tag   # 步骤名
-        id: meta              # 步骤ID
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
         run: |
-          short_sha="$(echo "${GITHUB_SHA}" | cut -c1-12)"
           image="$(echo "${IMAGE}" | tr '[:upper:]' '[:lower:]')"
-          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"       # 定义short_sha变量，用于当前步骤的 output
-          
-          echo "image=${image}" >> "$GITHUB_OUTPUT"
-          
-          echo "IMAGE_REF=${image}:${short_sha}" >> "$GITHUB_ENV"   # 用于后续步骤的环境变量
-          
-          {
-            echo "short_sha=${short_sha}"
-            echo "image=${image}"
-          } >> "$GITHUB_ENV"
-
-      - name: Docker tags # 步骤名
-        id: tags          # 步骤ID
-        run: |
-          echo "打印上一步骤定义的变量IMAGE_REF=${IMAGE_REF}"
-          echo "short_sha=${short_sha}"
-          echo "image=${image}"
-
-  deploy:
-    name: deploy
-    needs: [ publish ]  # 依赖上游job
-    runs-on: ubuntu-latest
-    steps:
-      - name: service deploy # 步骤名
-        run: |
-          echo "镜像标签是 ${{ needs.publish.outputs.image_tag }}"
-
+          docker build -t "${image}:${IMAGE_TAG}" .
+          docker push "${image}:${IMAGE_TAG}"
