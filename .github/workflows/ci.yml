@@ -42,7 +42,7 @@ jobs:
           echo "github.token=${{ github.token }}"
           echo "github.workspace=${{ github.workspace }}"
           echo "github.repository_owner=${{ github.repository_owner }}"
-          echo "runner.os=${{ runner.os }}"
+          echo "操作系统runner.os=${{ runner.os }}"
           echo "job.status=${{ job.status }}"
           echo "issue地址：${{ github.event.issue.html_url }}"
           echo "pr地址： ${{  github.event.pull_request.html_url }}"
