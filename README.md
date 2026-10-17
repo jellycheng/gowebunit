@@ -4,9 +4,16 @@
 
 ```
 
-## 启动服务
+## 本地启动服务
 ```
 go run main.go -config=./.env
+
+```
+
+## 本地打包并运行
+```
+docker build -t gowebunit:local .
+docker run --rm -p 9909:9909 gowebunit:local
 
 ```
 

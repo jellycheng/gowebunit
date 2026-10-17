@@ -1,0 +1,6 @@
+.git
+.github
+output
+.env
+*.log
+.DS_Store
