@@ -27,7 +27,7 @@ jobs:
     needs: myjob1
     steps:
       - env: # 定义单个步骤变量，${{ needs.依赖上游job名.outputs.变量名 }}
-          OUTPUT1: ${{needs.job1.outputs.output1}}
-          OUTPUT2: ${{needs.job1.outputs.output2}}
+          OUTPUT1: ${{needs.myjob1.outputs.output1}}
+          OUTPUT2: ${{needs.myjob1.outputs.output2}}
         run: |
           echo "使用步骤变量：$OUTPUT1 $OUTPUT2"
